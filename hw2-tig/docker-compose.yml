@@ -1,0 +1,85 @@
+version: '3.6'
+
+services:
+  telegraf:
+    hostname: telegraf
+    image: arm64v8/telegraf:1.23.4
+    volumes:
+    - ./telegraf/etc/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+      - elasticsearch
+      - nginx
+      - mongodb
+    ports:
+      - '127.0.0.1:8125:8125/udp'
+
+  influxdb:
+    image: arm64v8/influxdb:1.8.10
+    ports:
+      - '127.0.0.1:8086:8086'
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    environment:
+      INFLUXDB_DB: influx
+      INFLUXDB_ADMIN_USER: admin
+      INFLUXDB_ADMIN_PASSWORD: admin
+
+  nginx:
+    image: arm64v8/nginx:1.23.1-alpine
+    ports:
+      - '127.0.0.1:9090:9090'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+  grafana:
+    image: grafana/grafana-oss:9.1.2
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    ports:
+      - '127.0.0.1:3000:3000'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+
+  elasticsearch:
+    image: arm64v8/elasticsearch:8.4.1
+    ports:
+      - '127.0.0.1:9200:9200'
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: false
+
+  mongodb:
+    image: arm64v8/mongo:6.0.1
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+
+  java-tig:
+    build: ./java-tig
+    image: java-tig
+    ports:
+      - '127.0.0.1:8081:8081'
+      - '127.0.0.1:8082:8082'
+    depends_on:
+      - telegraf
+    links:
+      - telegraf
+
+volumes:
+  elasticsearch_data: {}
+  grafana_data: {}
+  influxdb_data: {}
