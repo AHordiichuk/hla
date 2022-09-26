@@ -1,0 +1,17 @@
+datasources:
+    mysql:
+      jdbc-url: jdbc:mysql://localhost:9000/test
+      username: test
+      password: test
+
+    percona:
+      jdbc-url: jdbc:mysql://localhost:9001/test
+      username: test
+      password: test
+
+    postgres:
+      jdbc-url: jdbc:postgresql://localhost:9002/test
+      username: test
+      password: test
+
+

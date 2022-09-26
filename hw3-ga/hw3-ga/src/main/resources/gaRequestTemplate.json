@@ -1,0 +1,15 @@
+{
+  "client_id": "${clientId}",
+  "timestamp_micros": "${eventTs}",
+  "non_personalized_ads": true,
+  "events": [
+    {
+      "name": "rate",
+      "params": {
+        "items": [],
+        "value": ${rate},
+        "currency": "${currency}"
+      }
+    }
+  ]
+}

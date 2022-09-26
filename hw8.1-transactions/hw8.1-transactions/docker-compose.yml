@@ -1,0 +1,32 @@
+version: '3.6'
+
+services:
+  mysql:
+    image: arm64v8/mysql:8.0.30
+    environment:
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: test
+    ports:
+      - '0.0.0.0:9000:3306'
+
+  percona:
+    platform: linux/x86_64
+    image: percona
+    environment:
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: test
+    ports:
+      - '0.0.0.0:9001:3306'
+
+  postgres:
+    image: arm64v8/postgres
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    ports:
+      - '0.0.0.0:9002:5432'
